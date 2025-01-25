@@ -45,14 +45,18 @@ sim.cs(
 
 \item{add.noise}{a \code{\link[=logical]{logical()}} indicating whether to add biological and measurement noise}
 
-\item{curve_params}{a \code{\link[=data.frame]{data.frame()}} containing MCMC samples of parameters from the Bayesian posterior distribution of a longitudinal decay curve model. The parameter columns must be named:
+\item{curve_params}{a \code{\link[=data.frame]{data.frame()}} containing MCMC samples of parameters
+from the Bayesian posterior distribution of a longitudinal decay curve model.
+The parameter columns must be named:
 \itemize{
-\item \code{antigen_iso}: a \code{\link[=character]{character()}} vector indicating antigen-isotype combinations
+\item \code{antigen_iso}: a \code{\link[=character]{character()}} vector indicating antigen-isotype
+combinations
 \item \code{iter}: an \code{\link[=integer]{integer()}} vector indicating MCMC sampling iterations
-\item \code{y0}: baseline antibody level at \eqn{t=0} (\eqn{y(t=0)})
+\item \code{y0}: baseline antibody level at $t=0$ ($y(t=0)$)
 \item \code{y1}: antibody peak level (ELISA units)
 \item \code{t1}: duration of infection
-\item \code{alpha}: antibody decay rate (1/days for the current longitudinal parameter sets)
+\item \code{alpha}: antibody decay rate
+(1/days for the current longitudinal parameter sets)
 \item \code{r}: shape factor of antibody decay
 }}
 
@@ -80,9 +84,9 @@ Makes a cross-sectional data set (age, y(t) set)
 and adds noise, if desired.
 }
 \examples{
-\donttest{
 # Load curve parameters
-dmcmc <- load_curve_params("https://osf.io/download/rtw5k")
+curve <-
+  typhoid_curves_nostrat_100
 
 # Specify the antibody-isotype responses to include in analyses
 antibodies <- c("HlyE_IgA", "HlyE_IgG")
@@ -102,11 +106,12 @@ nrep <- 100
 # Biologic noise distribution
 dlims <- rbind(
   "HlyE_IgA" = c(min = 0, max = 0.5),
-  "HlyE_IgG" = c(min = 0, max = 0.5))
+  "HlyE_IgG" = c(min = 0, max = 0.5)
+)
 
 # Generate cross-sectional data
 csdata <- sim.cs(
-  curve_params = dmcmc,
+  curve_params = curve,
   lambda = lambda,
   n.smpl = nrep,
   age.rng = lifespan,
@@ -117,5 +122,5 @@ csdata <- sim.cs(
   noise_limits = dlims,
   format = "long"
 )
-}
+
 }

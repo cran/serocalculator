@@ -2,25 +2,22 @@
 % Please edit documentation in R/f_dev.r
 \name{f_dev}
 \alias{f_dev}
-\title{Calculate negative log-likelihood (deviance) for one antigen:isotype pair}
+\title{Calculate negative log-likelihood (deviance) for one antigen:isotype pair and several values of incidence}
 \usage{
 f_dev(lambda, csdata, lnpars, cond)
 }
 \arguments{
-\item{lambda}{\code{\link[=numeric]{numeric()}} incidence parameter, in events per person-year}
-
-\item{csdata}{cross-sectional sample data containing variables \code{value} and \code{age}}
-
-\item{lnpars}{longitudinal antibody decay model parameters \code{alpha}, \code{y1}, and \code{d}}
-
-\item{cond}{measurement noise parameters \code{nu}, \code{eps}, \code{y.low}, and \code{y.high}}
+\item{lambda}{a \link{numeric} vector of incidence parameters, in events per person-year}
 }
 \value{
-a \code{\link[=numeric]{numeric()}} vector of negative log-likelihoods,
+a \link{numeric} vector of negative log-likelihoods,
 corresponding to the elements of input \code{lambda}
 }
 \description{
-more description to be added here
+Calculates negative log-likelihood (deviance) for one antigen:isotype pair and several values of incidence (\code{lambda}).
+}
+\details{
+Vectorized version of \code{\link[=f_dev0]{f_dev0()}}; interface with C lib \code{serocalc.so}
 }
 \examples{
 \donttest{
@@ -28,10 +25,13 @@ library(dplyr)
 library(tibble)
 
 # load in longitudinal parameters
-curve_params = load_curve_params("https://osf.io/download/rtw5k")
-xs_data <- "https://osf.io/download//n6cp3/" \%>\%
-load_pop_data() \%>\%
-clean_pop_data()
+curve_params <-
+  typhoid_curves_nostrat_100 \%>\%
+  filter(antigen_iso \%in\% c("HlyE_IgA", "HlyE_IgG"))
+
+# load in pop data
+xs_data <-
+  sees_pop_data_pk_100
 
 #Load noise params
 noise_params <- tibble(
@@ -46,12 +46,14 @@ cur_antibody = "HlyE_IgA"
 cur_data =
   xs_data \%>\%
   dplyr::filter(
-   .data$catchment == "dhaka",
-   .data$antigen_iso == cur_antibody)
+   .data$catchment == "aku",
+   .data$antigen_iso == cur_antibody) \%>\%
+  dplyr::slice_head(n = 100)
 
 cur_curve_params =
   curve_params \%>\%
-  dplyr::filter(.data$antigen_iso == cur_antibody)
+  dplyr::filter(.data$antigen_iso == cur_antibody) \%>\%
+  dplyr::slice_head(n = 100)
 
 cur_noise_params =
   noise_params \%>\%
@@ -66,9 +68,9 @@ if(!is.element('d', names(cur_curve_params)))
       d = .data$r - 1)
 }
 
-lambda = seq(.1, .2, by = .01)
-nll <- f_dev(
-    lambda = lambda,
+lambdas = seq(.1, .2, by = .01)
+f_dev(
+    lambda = lambdas,
     csdata = cur_data,
     lnpars = cur_curve_params,
     cond = cur_noise_params

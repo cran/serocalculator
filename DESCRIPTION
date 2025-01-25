@@ -1,30 +1,40 @@
-Package: serocalculator
 Type: Package
+Package: serocalculator
 Title: Estimating Infection Rates from Serological Data
-Version: 1.0.3
+Version: 1.3.0
 Authors@R: c(
-  person(given = "Peter", family = "Teunis", email = "p.teunis@emory.edu", role = c("aut", "cph"), comment = "Author of the method and original code."),
-  person(given = "Kristina", family = "Lai", email = "kwlai@ucdavis.edu", role = c("aut", "cre")), 
-  person(given = "Chris", family = "Orwa", role = "aut"), 
-  person(given = "Kristen", family = "Aiemjoy", email = "kaiemjoy@ucdavis.edu", role = c("aut")),
-  person(given = "Douglas Ezra", family = "Morrison", email = "demorrison@ucdavis.edu", role = c("aut")))
-Description: Translates antibody levels measured in cross-sectional population samples into estimates of the frequency with which seroconversions (infections) occur in the sampled populations. Replaces the previous 'seroincidence' package. Methods originally published in Simonsen et al. (2009) <doi:10.1002/sim.3592> and Teunis et al. (2012) <doi:10.1002/sim.5322>, and further developed in subsequent publications by de Graaf et al. (2014) <doi:10.1016/j.epidem.2014.08.002>, Teunis et al. (2016) <doi:10.1016/j.epidem.2016.04.001>, and Teunis et al. (2020) <doi:10.1002/sim.8578>.
-Depends: R (>= 4.1.0)
+    person("Peter", "Teunis", , "p.teunis@emory.edu", role = c("aut", "cph"),
+           comment = "Author of the method and original code."),
+    person("Kristina", "Lai", , "kwlai@ucdavis.edu", role = c("aut", "cre")),
+    person("Chris", "Orwa", role = "aut"),
+    person("Kristen", "Aiemjoy", , "kaiemjoy@ucdavis.edu", role = "aut"),
+    person("Douglas Ezra", "Morrison", , "demorrison@ucdavis.edu", role = "aut")
+  )
+Description: Translates antibody levels measured in cross-sectional
+    population samples into estimates of the frequency with which
+    seroconversions (infections) occur in the sampled populations.
+    Replaces the previous `seroincidence` package.
 License: GPL-3
-Imports: doParallel, dplyr (>= 1.1.1), foreach, ggplot2, ggpubr,
-        lifecycle, magrittr, mixtools, Rcpp, rlang, rngtools, scales,
-        stats, tibble, tidyr, utils, cli
-Suggests: parallel, knitr, rmarkdown, tidyverse, fs, testthat (>=
-        3.0.0), readr, bookdown, ggbeeswarm, DT
-Encoding: UTF-8
 URL: https://github.com/UCD-SERG/serocalculator,
         https://ucd-serg.github.io/serocalculator/
-RoxygenNote: 7.3.1
-NeedsCompilation: yes
+BugReports: https://github.com/UCD-SERG/serocalculator/issues
+Depends: R (>= 4.1.0)
+Imports: cli, doParallel, dplyr (>= 1.1.1), foreach, ggplot2, ggpubr,
+        lifecycle, magrittr, mixtools, Rcpp, rlang, rngtools, scales,
+        stats, tibble, tidyr, tidyselect, utils, purrr, and, glue,
+        stringr
+Suggests: bookdown, DT, fs, ggbeeswarm, knitr, pak, parallel, readr,
+        quarto, rmarkdown, spelling, ssdtools (>= 1.0.6.9016), testthat
+        (>= 3.0.0), tidyverse, qrcode, svglite, vdiffr
 LinkingTo: Rcpp
-Language: en-US
 Config/testthat/edition: 3
-Packaged: 2024-07-18 18:59:57 UTC; kwlai
+Config/Needs/build: moodymudskipper/devtag
+Encoding: UTF-8
+Language: en-US
+LazyData: true
+NeedsCompilation: yes
+RoxygenNote: 7.3.2
+Packaged: 2025-01-25 00:42:28 UTC; kwlai
 Author: Peter Teunis [aut, cph] (Author of the method and original code.),
   Kristina Lai [aut, cre],
   Chris Orwa [aut],
@@ -32,4 +42,4 @@ Author: Peter Teunis [aut, cph] (Author of the method and original code.),
   Douglas Ezra Morrison [aut]
 Maintainer: Kristina Lai <kwlai@ucdavis.edu>
 Repository: CRAN
-Date/Publication: 2024-07-21 15:40:02 UTC
+Date/Publication: 2025-01-25 07:10:02 UTC

@@ -1,5 +1,5 @@
-serocalculator
-================
+# serocalculator
+
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
@@ -7,8 +7,19 @@ serocalculator
 
 <!-- badges: start -->
 
-[![R-CMD-check](https://github.com/UCD-SERG/serocalculator/workflows/R-CMD-check/badge.svg)](https://github.com/UCD-SERG/serocalculator/actions)
+[![R-CMD-check](https://github.com/UCD-SERG/serocalculator/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/UCD-SERG/serocalculator/actions/workflows/R-CMD-check.yaml)
+[![Codecov test
+coverage](https://codecov.io/gh/UCD-SERG/serocalculator/graph/badge.svg)](https://app.codecov.io/gh/UCD-SERG/serocalculator)
 <!-- badges: end -->
+
+<div id="fig-website-QR">
+
+![](man/figures/qr.svg)
+
+
+Figure 1: QR code for `serocalculator` website
+
+</div>
 
 Antibody levels measured in a cross–sectional population sample can be
 translated into an estimate of the frequency with which seroconversions
@@ -28,18 +39,20 @@ Started](https://ucd-serg.github.io/serocalculator/articles/serocalculator.html)
 
 ## Installing R
 
-The **serocalculator** package is written in R, a free, open-source
-software program. The end user of this package must have access to a
-working installation of the R software. We recommend installing [base
-R](https://cran.r-project.org/) and a Graphical User Interfaces (GUI)
-for R such as [RStudio](https://posit.co/products/open-source/rstudio/).
+The **serocalculator** package is designed to be used in
+[R](https://www.r-project.org/), which is a free, open-source software
+environment for statistical computing and graphics. The end user of this
+package must have access to a working installation of the R software. We
+recommend installing [base R](https://cran.r-project.org/) and a
+Graphical User Interface (GUI) for R such as
+[RStudio](https://posit.co/products/open-source/rstudio/).
 
 If you need to download and install R and/or RStudio, we recommend
 following the tutorial below from *Hands On Programming in R* by Garrett
 Grolemund:
 
 **Installing R and RStudio**:
-<https://rstudio-education.github.io/hopr/starting.html>
+https://rstudio-education.github.io/hopr/starting.html
 
 ## Installing the Serocalculator Package
 
@@ -93,25 +106,29 @@ devtools::install_github("ucd-serg/serocalculator")
 Before launching the development version of **serocalculator**, Windows
 users will need to install Rtools, which contains a collection of tools
 for building and employing R packages that are still in development.
-This can be done either during the *devtools* package installation, or
-independently if *devtools* is already installed.
+This can be done either:
 
-##### During devtools installation:
+1)  [during the *devtools* package
+    installation](#during-devtools-installation), **or**
+
+2)  [independently](#independently), if *devtools* is already installed.
+
+##### During devtools installation
 
 When prompted to install additional build tools, select “Yes” and Rtools
 will be installed.
 
-<figure>
-<img src="man/figures/Rtools1.png"
-alt="Click Yes to install Rtools along with the devtools package" />
-<figcaption aria-hidden="true">Click Yes to install Rtools along with
-the <em>devtools</em> package</figcaption>
-</figure>
+![Click Yes to install Rtools along with the *devtools*
+package](man/figures/Rtools1.png)
+
+> [!NOTE]
+>
+> After installing Rtools, you may need to restart RStudio before
+> continuing to install `serocalculator`.
 
 ##### Independently:
 
-1.  Download Rtools from
-    <https://cran.r-project.org/bin/windows/Rtools/>
+1.  Download Rtools from https://cran.r-project.org/bin/windows/Rtools/
 
 2.  Run the installer
 
@@ -125,18 +142,21 @@ the <em>devtools</em> package</figcaption>
 
 ## Getting Help
 
-If you need assistance or encounter a clear bug, please file an issue
-with a minimal reproducible example on
+If you have questions about using this software package, please use the
+[Q&A
+forum](https://github.com/UCD-SERG/serocalculator/discussions/categories/q-a).
+
+If you encounter a clear bug, please file an issue with a [minimal
+reproducible example](https://reprex.tidyverse.org/) on
 [GitHub](https://github.com/UCD-SERG/serocalculator/issues).
 
 Another great resource is **The Epidemiologist R Handbook**, which
 includes an introductory page on asking for help with R packages via
-GitHub: <https://epirhandbook.com/en/getting-help.html>
+GitHub: https://epirhandbook.com/en/getting-help.html
 
-## Serocalculator App
+## Contributing to this project
 
-An app that takes the 5 curve parameters as inputs and runs
-`autoplot.curve_params()`
-
-<iframe src="https://ucdserg.shinyapps.io/shiny_decay_curve/?showcase=0" width="100%" height="600px" data-external="1">
-</iframe>
+We welcome contributions to this project - anything from typo
+corrections to new features. Please see our [Contributor
+guide](https://ucd-serg.github.io/serocalculator/CONTRIBUTING.html#fixing-typos)
+for more information.

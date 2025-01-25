@@ -7,26 +7,25 @@
 #' @return an object of class `"ggarrange"`, which is a [ggplot2::ggplot()] or a [list()] of [ggplot2::ggplot()]s.
 #' @export
 #' @examples
-#'
+#'\donttest{
 #' library(dplyr)
 #' library(ggplot2)
-#'\donttest{
-#' xs_data <- "https://osf.io/download//n6cp3/" %>%
-#'   load_pop_data() %>%
-#'   clean_pop_data
 #'
-#' curve <- load_curve_params("https://osf.io/download/rtw5k/") %>%
-#'   filter(antigen_iso %in% c("HlyE_IgA", "HlyE_IgG")) %>%
-#'   slice(1:100, .by = antigen_iso) # Reduce dataset for the purposes of this example
+#' xs_data <-
+#'   sees_pop_data_pk_100
 #'
-#' noise <- load_noise_params("https://osf.io/download//hqy4v/")
+#' curve <-
+#'   typhoid_curves_nostrat_100 %>%
+#'   filter(antigen_iso %in% c("HlyE_IgA", "HlyE_IgG"))
 #'
+#' noise <-
+#'   example_noise_params_pk
 #'
 #' est2 <- est.incidence.by(
 #'   strata = c("catchment"),
-#'   pop_data = xs_data %>% filter(Country == "Pakistan"),
+#'   pop_data = xs_data,
 #'   curve_params = curve,
-#'   noise_params = noise %>% filter(Country == "Pakistan"),
+#'   noise_params = noise,
 #'   antigen_isos = c("HlyE_IgG", "HlyE_IgA"),
 #'   #num_cores = 8, #Allow for parallel processing to decrease run time
 #'   build_graph = TRUE
@@ -34,44 +33,43 @@
 #'
 #' # Plot the log-likelihood curve
 #' autoplot(est2)
-#' }
+#'}
 autoplot.seroincidence.by = function(
     object,
     ncol = min(3, length(object)),
-    ...)
-{
-
-  if(length(object) == 0)
-  {
+    ...) {
+  if (length(object) == 0) {
     stop("The input doesn't contain any fits. Did subsetting go wrong?")
   }
 
-  if(!attr(object,"graphs_included"))
-  {
-
+  if (!attr(object, "graphs_included")) {
     stop(
       "Graphs cannot be extracted; ",
-      "`build_graph` was not `TRUE` in the call to `est.incidence.by()`")
-    figure = NULL
+      "`build_graph` was not `TRUE` in the call to `est.incidence.by()`"
+    )
+    figure <- NULL
   }
 
-  labels = names(object)
-  figs = lapply(object, FUN = autoplot.seroincidence, ...)
+  labels <- names(object)
+  figs <- lapply(object, FUN = autoplot.seroincidence, ...)
 
   for (i in 1:length(figs))
   {
-    figs[[i]] = figs[[i]] + ggplot2::ggtitle(labels[i])
+    figs[[i]] <- figs[[i]] + ggplot2::ggtitle(labels[i])
   }
 
 
-  nrow = ceiling(length(figs)/ncol)
+  nrow <- ceiling(length(figs) / ncol)
   figure <- do.call(
-    what = function(...) ggpubr::ggarrange(
-      ...,
-      ncol = ncol,
-      nrow = nrow),
-    args = figs)
+    what = function(...) {
+      ggpubr::ggarrange(
+        ...,
+        ncol = ncol,
+        nrow = nrow
+      )
+    },
+    args = figs
+  )
 
   return(figure)
-
 }

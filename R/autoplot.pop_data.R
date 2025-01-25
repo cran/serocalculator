@@ -4,9 +4,11 @@
 #'
 #' @param object A `pop_data` object (from [load_pop_data()])
 #' @param log whether to show antibody responses on logarithmic scale
-#' @param strata the name of a variable in `pop_data` to stratify by (or `NULL` for no stratification)
+#' @param strata the name of a variable in `pop_data`
+#' to stratify by (or `NULL` for no stratification)
 #' @param ... unused
-#' @param type an option to choose type of chart: the current options are `"density"` or `"age-scatter"`
+#' @param type an option to choose type of chart:
+#' the current options are `"density"` or `"age-scatter"`
 #'
 #' @return a [ggplot2::ggplot] object
 #'
@@ -14,13 +16,15 @@
 #' \donttest{
 #' library(dplyr)
 #' library(ggplot2)
+#' library(magrittr)
 #'
-#' xs_data <- "https://osf.io/download//n6cp3/" %>%
-#'   load_pop_data() %>%
-#'   clean_pop_data()
+#' xs_data <-
+#'   serocalculator_example("example_pop_data.csv") %>%
+#'   read.csv() %>%
+#'   as_pop_data()
 #'
-#' xs_data %>% autoplot(strata = "Country", type = "density")
-#' xs_data %>% autoplot(strata = "Country", type = "age-scatter")
+#' xs_data %>% autoplot(strata = "catchment", type = "density")
+#' xs_data %>% autoplot(strata = "catchment", type = "age-scatter")
 #' }
 #' @export
 autoplot.pop_data <- function(
@@ -30,44 +34,78 @@ autoplot.pop_data <- function(
     strata = NULL,
     ...) {
 
+  if (!is.null(strata) && !is.element(strata, names(object))) {
+    cli::cli_abort(
+      class = "unavailable_strata",
+      message = c(
+        x = "The variable {.var {strata}} specified by argument {.arg strata}
+        does not exist in {.arg object}.",
+        i = "Please choose a column that exists in {.arg object}."
+      )
+    )
+  }
+
   if (type == "age-scatter") {
     age_scatter(object, strata)
   } else if (type == "density") {
     density_plot(object, strata, log)
   } else {
     cli::cli_abort(
-      '`type = "{type}"` is not a valid input;
-      the currently available options for `type` are "density" or "age-scatter"')
+      class = "unavailable_type",
+      message = c(
+        x = "{.fn autoplot.pop_data} does not currently have an option for
+         {.arg type} = {.str {type}}.",
+        i = "The {.arg type} argument accepts options
+        {.str density} or {.str age-scatter}."
+      )
+    )
   }
 }
 
 age_scatter <- function(
     object,
-    strata = NULL) {
+    strata = NULL,
+    age_var = object %>% get_age_var(),
+    value_var = object %>% get_value_var()) {
   # create default plotting
 
-  if(is.null(strata))
-  {
+  if (is.null(strata)) {
     plot1 <-
       object %>%
-      ggplot2::ggplot(aes(x = .data$age, y = .data$value))
-  } else
-  {
+      ggplot2::ggplot() +
+      ggplot2::aes(
+        x = .data[[age_var]],
+        y = .data[[value_var]]
+      )
+  } else {
     plot1 <-
       object %>%
-      ggplot2::ggplot(aes(x = .data$age, y = .data$value, col = get(strata))) +
+      ggplot2::ggplot() +
+      ggplot2::aes(
+        col = .data[[strata]],
+        x = .data[[age_var]],
+        y = .data[[value_var]]
+      ) +
       ggplot2::labs(colour = strata)
   }
 
   plot1 <- plot1 +
     ggplot2::theme_linedraw() +
-    ggplot2::scale_y_log10() +
+    # ggplot2::scale_y_log10() +
+
+    # avoid log 0 (https://bit.ly/4eqDkT4)
+    ggplot2::scale_y_continuous(
+      trans = scales::pseudo_log_trans(sigma = 0.01),
+      breaks = c(-1, -0.1, 0, 0.1, 1, 10),
+      minor_breaks = NULL
+    ) +
     ggplot2::geom_point(size = .6, alpha = .7) +
     ggplot2::geom_smooth(
       method = "lm",
       se = FALSE,
       formula = y ~ x,
-      na.rm = TRUE) +
+      na.rm = TRUE
+    ) +
     ggplot2::labs(
       title = "Quantitative Antibody Responses by Age",
       x = "Age",
@@ -81,10 +119,12 @@ age_scatter <- function(
 density_plot <- function(
     object,
     strata = NULL,
-    log = FALSE) {
+    log = FALSE,
+    value_var = object %>% get_value_var()) {
   plot1 <-
     object %>%
-    ggplot2::ggplot(aes(x = .data$value)) +
+    ggplot2::ggplot() +
+    ggplot2::aes(x = .data[[value_var]]) +
     ggplot2::theme_linedraw() +
     ggplot2::facet_wrap(~antigen_iso, nrow = 3)
 
@@ -104,11 +144,35 @@ density_plot <- function(
       ggplot2::labs(fill = strata)
   }
   if (log) {
+
+    min_nonzero_val <-
+      object %>%
+      get_value() %>%
+      purrr::keep(~ . > 0) %>%
+      min()
+
+    max_val <-
+      object %>%
+      get_value() %>%
+      max()
+
+    breaks1 <- c(0, 10^seq(
+      min_nonzero_val %>% log10() %>% floor(),
+      max_val %>% log10() %>% ceiling()
+    ))
+
     plot1 <- plot1 +
-      ggplot2::scale_x_log10() +
+      ggplot2::scale_x_continuous(
+        labels = scales::label_comma(),
+        transform = scales::pseudo_log_trans(
+          sigma = min_nonzero_val / 10,
+          base = 10
+        ),
+        breaks = breaks1
+      ) +
       ggplot2::labs(
-        title = "Distribution of Cross-sectional Antibody Responses (Log transformed)",
-        x = "Log10(Antibody Response Value)",
+        title = "Distribution of Cross-sectional Antibody Responses",
+        x = "Quantitative antibody response",
         y = "Frequency"
       )
   } else {

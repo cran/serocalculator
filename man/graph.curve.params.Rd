@@ -24,11 +24,12 @@ a \code{\link[ggplot2:ggplot]{ggplot2::ggplot()}} object
 Graph estimated antibody decay curve
 }
 \examples{
-\donttest{
-curve_params <- readRDS(url("https://osf.io/download/rtw5k/"))
+curve <-
+  typhoid_curves_nostrat_100 |>
+  dplyr::filter(antigen_iso \%in\% c("HlyE_IgA", "HlyE_IgG"))
 
-plot1 <- graph.curve.params(curve_params)
+plot1 <- graph.curve.params(curve)
 
 print(plot1)
-}
+
 }

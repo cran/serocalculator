@@ -11,9 +11,11 @@
 
 \item{log}{whether to show antibody responses on logarithmic scale}
 
-\item{type}{an option to choose type of chart: the current options are \code{"density"} or \code{"age-scatter"}}
+\item{type}{an option to choose type of chart:
+the current options are \code{"density"} or \code{"age-scatter"}}
 
-\item{strata}{the name of a variable in \code{pop_data} to stratify by (or \code{NULL} for no stratification)}
+\item{strata}{the name of a variable in \code{pop_data}
+to stratify by (or \code{NULL} for no stratification)}
 
 \item{...}{unused}
 }
@@ -27,12 +29,14 @@ a \link[ggplot2:ggplot]{ggplot2::ggplot} object
 \donttest{
 library(dplyr)
 library(ggplot2)
+library(magrittr)
 
-xs_data <- "https://osf.io/download//n6cp3/" \%>\%
-  load_pop_data() \%>\%
-  clean_pop_data()
+xs_data <-
+  serocalculator_example("example_pop_data.csv") \%>\%
+  read.csv() \%>\%
+  as_pop_data()
 
-xs_data \%>\% autoplot(strata = "Country", type = "density")
-xs_data \%>\% autoplot(strata = "Country", type = "age-scatter")
+xs_data \%>\% autoplot(strata = "catchment", type = "density")
+xs_data \%>\% autoplot(strata = "catchment", type = "age-scatter")
 }
 }

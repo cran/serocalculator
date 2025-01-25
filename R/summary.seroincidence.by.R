@@ -27,29 +27,29 @@
 #'
 #' @examples
 #' library(dplyr)
-#'\donttest{
-#' xs_data <- load_pop_data("https://osf.io/download//n6cp3/")%>%
-#'   clean_pop_data()
 #'
-#' curve <- load_curve_params("https://osf.io/download/rtw5k/") %>%
-#'   filter(antigen_iso %in% c("HlyE_IgA", "HlyE_IgG")) %>%
-#'   slice(1:100, .by = antigen_iso) # Reduce dataset for the purposes of this example
+#' xs_data <-
+#'   sees_pop_data_pk_100
 #'
-#' noise <- load_noise_params("https://osf.io/download//hqy4v/")
-#' # estimate seroincidence#'
+#' curve <-
+#'   typhoid_curves_nostrat_100 %>%
+#'   filter(antigen_iso %in% c("HlyE_IgA", "HlyE_IgG"))
+#'
+#' noise <-
+#'   example_noise_params_pk
+#'
+#' # estimate seroincidence
 #' est2 <- est.incidence.by(
 #'   strata = c("catchment"),
-#'   pop_data = xs_data %>% filter(Country == "Pakistan"),
+#'   pop_data = xs_data,
 #'   curve_params = curve,
-#'   noise_params = noise %>% filter(Country == "Pakistan"),
+#'   noise_params = noise,
 #'   antigen_isos = c("HlyE_IgG", "HlyE_IgA"),
 #'   #num_cores = 8 # Allow for parallel processing to decrease run time
 #' )
+#'
 #' # calculate summary statistics for the seroincidence object
 #' summary(est2)
-#'
-#'
-#'}
 #'
 #' @export
 summary.seroincidence.by <- function(
@@ -57,11 +57,9 @@ summary.seroincidence.by <- function(
     confidence_level = .95,
     showDeviance = TRUE,
     showConvergence = TRUE,
-    ...)
-{
-
-  alpha = 1 - confidence_level
-  quantiles = c(alpha/2, 1 - alpha/2)
+    ...) {
+  alpha <- 1 - confidence_level
+  quantiles <- c(alpha / 2, 1 - alpha / 2)
 
   if (length(quantiles) != 2 || any(quantiles < 0) || any(quantiles > 1)) {
     stop("Incorrectly specified quantiles")
@@ -71,14 +69,15 @@ summary.seroincidence.by <- function(
     stop("Quantile for upper bound of incidence estimate cannot be less than the lower bound.")
   }
 
-  results =
+  results <-
     object %>%
     lapply(
       FUN = summary.seroincidence,
-      coverage = confidence_level) %>%
+      coverage = confidence_level
+    ) %>%
     bind_rows(.id = "Stratum")
 
-  results =
+  results <-
     inner_join(
       object %>% attr("Strata"),
       results,
@@ -93,10 +92,9 @@ summary.seroincidence.by <- function(
   }
 
   if (showConvergence) {
-    results = results %>%
+    results <- results %>%
       relocate("nlm.convergence.code", .after = everything())
-  } else
-  {
+  } else {
     results$nlm.convergence.code <- NULL
   }
 
@@ -110,7 +108,7 @@ summary.seroincidence.by <- function(
       Quantiles = quantiles,
       class =
         "summary.seroincidence.by" %>%
-        union(class(results))
+          union(class(results))
     )
 
   return(output)
